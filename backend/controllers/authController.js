@@ -40,9 +40,50 @@ exports.registerUser = async (req, res) => {
 
 // Dummy placeholders for other routes
 exports.loginUser = async (req, res) => {
-    res.status(200).json({ message: "Login route works" });
+    const { email, password } = req.body;
+
+    // 🔹 Check if fields are provided
+    if (!email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    try {
+        // 🔹 Find user in the database
+        const user = await User.findOne({ email });
+
+        // 🔹 Check if user exists and password is correct
+        if (!user || !(await user.comparePassword(password))) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        // 🔹 Send successful response
+        res.status(200).json({
+            id: user._id,  // ✅ Correct ID format
+            user,
+            token: generateToken(user._id),
+        });
+
+    } catch (err) {
+        // 🔹 Handle errors properly
+        res.status(500).json({
+            message: "Error logging in user",
+            error: err.message,
+        });
+    }
 };
 
 exports.getUserInfo = async (req, res) => {
-    res.status(200).json({ message: "User info route works" });
+    try{
+        const user= await User.findById(req.user.id).select("-password")
+
+        if(!user){
+            return res.status(400).json({ message:"User not found"})
+        }
+        res.status(200).json(user)
+    }catch(err){
+        res.status(500).json({
+            message: "Error logging in user",
+            error: err.message,
+        });
+    }
 };
