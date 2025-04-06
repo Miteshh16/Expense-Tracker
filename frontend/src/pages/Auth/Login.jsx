@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import AuthLayouts from '../../Components/layouts/AuthLayouts';
 import { useNavigate, Link } from 'react-router-dom';
 import Input from '../../Components/Inputs/Input';
+import axiosInstance from '../../utils/axiosInstance';
+import {API_PATHS} from '../../utils/apiPath'
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -29,7 +31,35 @@ const Login = () => {
     }
 
     setError("");
-    console.log("Logging in with:", { email, password });
+    // console.log("Logging in with:", { email, password });
+    try {
+      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
+        email,
+        password,
+      });
+    
+      const { token, user } = response.data;
+    
+      if (token) {
+        localStorage.setItem("token", token);
+        // optionally store user info
+        // localStorage.setItem("user", JSON.stringify(user));
+        navigate("/dashboard");
+      }
+    }  catch (error) {
+      console.error("Full error object:", error); // 👈 This will give us the real cause
+    
+      if (error.response) {
+        console.error("Backend Response:", error.response);
+      }
+    
+      if (error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    }
+    
 
     // TODO: Implement login API request here
   };
