@@ -19,7 +19,7 @@ exports.registerUser = async (req, res) => {
         }
 
         const user = await User.create({
-            fullname,
+            fullname, 
             email,
             password,
             profileImageUrl,

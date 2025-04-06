@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import AuthLayouts from '../../Components/layouts/AuthLayouts';
 import { useNavigate, Link } from 'react-router-dom';
 import Input from '../../Components/Inputs/Input';
 import ProfilePhotoSelector from '../../Components/Inputs/ProfilePhotoSelector';
 import { validateEmail } from '../../utils/helper';
+import axiosInstance from '../../utils/axiosInstance';
+import { API_PATHS } from '../../utils/apiPath';
+import { UserContext } from '../../Context/UserContext';
+import uploadImage from '../../utils/uploadImage';
+
 
 const Signup = () => {
   const [profilePic, setProfilePic] = useState(null);
@@ -13,24 +18,57 @@ const Signup = () => {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+  const { updateUser } = useContext(UserContext); // ✅ grab updateUser from context
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
+
     let profileImageUrl=""
 
-    if(!fullName){
-      setError("Please Enter Name")
-      return
+    if (!fullName) {
+      setError("Please Enter Name");
+      return;
     }
-    if(!validateEmail(email)){
-      setError("Please Enter Valid Email")
+    if (!validateEmail(email)) {
+      setError("Please Enter Valid Email");
+      return;
     }
-    if(!password){
-      setError("Enter correct Password")
-      return
+    if (!password) {
+      setError("Enter correct Password");
+      return;
     }
-    setError("")
-  };
+
+    setError("");
+
+    try {
+      
+      if(profilePic){
+        const imgUploadRes=await uploadImage(profilePic)
+        profileImageUrl=imgUploadRes.imageUrl ||""
+      }
+
+      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
+        fullname: fullName,
+        email,
+        password,
+        profileImageUrl,
+      });
+
+      const { token, user } = response.data;
+
+      if (token) {
+        localStorage.setItem("token", token);
+        updateUser(user);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      if (error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    }
+  }
 
   return (
     <AuthLayouts>
@@ -39,7 +77,7 @@ const Signup = () => {
         <p className="text-xs text-slate-700 mt-2 mb-6">Join us</p>
 
         <form onSubmit={handleSignUp}>
-          <ProfilePhotoSelector image={profilePic} setImage={setProfilePic}/>
+          <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               value={fullName}
@@ -64,15 +102,6 @@ const Signup = () => {
             placeholder="Min 8 Characters"
             type="password"
           />
-
-          {/* <div className="mb-4">
-            <label className="text-[13px] text-slate-800">Profile Picture</label>
-            <input
-              type="file"
-              onChange={(e) => setProfilePic(e.target.files[0])}
-              className="w-full mt-2"
-            />
-          </div> */}
 
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
