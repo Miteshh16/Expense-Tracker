@@ -5,7 +5,7 @@ import axiosInstance from "../../utils/axiosInstance"
 import { API_PATHS } from '../../utils/apiPath'
 import Modal from '../../Components/layouts/Modal'
 import AddIncomeForm from '../../Components/Income/AddIncomeForm'
-import { toast } from 'react-toastify'
+import { toast } from 'react-hot-toast'
 import IncomeList from '../../Components/layouts/IncomeList'
 import DeleteAlert from '../../Components/layouts/DeleteAlert'
 import { useUserAuth } from '../../hooks/useUserAuth'

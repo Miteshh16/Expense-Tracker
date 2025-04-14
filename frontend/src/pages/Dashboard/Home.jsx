@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../Components/layouts/DashboardLayout';
 import { useUserAuth } from '../../hooks/useUserAuth';
-import { useNavigate } from 'react-router-dom';
+import { data, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPath';
 import InfoCard from '../../Components/Cards.jsx/InfoCard';
@@ -11,7 +11,7 @@ import { addThousandsSpeaker } from '../../utils/helper';
 import RecentTransaction from '../../Dashboard/RecentTransaction';
 import FinanceOverview from '../../Dashboard/FinanceOverview';
 import ExpenseTransaction from '../../Dashboard/ExpenseTransaction';
-import Last30DaysExpense from '../../Dashboard/last30DaysExpense';
+import Last30DaysExpense from '../../Dashboard/Last30DaysExpense'
 import RecentIncomeWithChart from '../../Dashboard/RecentIncomeWithChart';
 import RecentIncome from '../../Dashboard/RecentIncome';
 

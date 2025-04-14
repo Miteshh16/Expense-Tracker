@@ -1,27 +1,27 @@
-import React, { useContext } from 'react'
-import { UserContext } from '../../Context/UserContext'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { SIDE_MENU_DATA } from '../../utils/data'
-import CharAvatar from '../Cards.jsx/CharAvatar'
+import React, { useContext } from 'react';
+import { UserContext } from '../../Context/UserContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { SIDE_MENU_DATA } from '../../utils/data';
+import CharAvatar from '../Cards.jsx/CharAvatar';
 
 const SideMenu = () => {
-  const { user, clearUser } = useContext(UserContext)
-  const navigate = useNavigate()
-  const location = useLocation()
+  const { user, clearUser } = useContext(UserContext);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleClick = (route) => {
-    if (route === "logout") {
-      handleLogout()
-      return
+    if (route === "/logout") {
+      handleLogout();
+      return;
     }
-    navigate(route)
-  }
+    navigate(route);
+  };
 
   const handleLogout = () => {
-    localStorage.clear()
-    clearUser()
-    navigate('/login')
-  }
+    localStorage.clear();
+    clearUser();
+    navigate('/login');
+  };
 
   return (
     <div className='w-64 h-[calc(100vh-64px)] bg-white border-r border-gray-200/50 p-5 sticky top-16 z-10 hidden lg:block'>
@@ -33,11 +33,14 @@ const SideMenu = () => {
             alt='Profile'
             className='w-20 h-20 bg-slate-400 rounded-full object-cover'
           />
-        ) : (<CharAvatar
+        ) : (
+          <CharAvatar
             fullName={user?.fullname}
             width="w-20"
             height="h-20"
-            style="text-xl"/>)}
+            style="text-xl"
+          />
+        )}
         <h5 className='text-gray-950 font-medium leading-6'>
           {user?.fullname || "User"}
         </h5>
@@ -45,21 +48,23 @@ const SideMenu = () => {
 
       {/* Menu Buttons */}
       {SIDE_MENU_DATA.map((item, index) => {
-        const isActive = location.pathname === item.route
+        const isActive = location.pathname === item.path;
+        const buttonClass = `w-full flex items-center gap-4 text-[15px] py-3 px-6 rounded-lg mb-3 
+          ${isActive ? "text-white bg-blue-500" : "text-gray-800 hover:bg-gray-100"}`;
+
         return (
           <button
             key={`menu_${index}`}
-            className={`w-full flex items-center gap-4 text-[15px] py-3 px-6 rounded-lg mb-3 
-              ${isActive ? "text-white bg-blue-500" : "text-gray-800 hover:bg-gray-100"}`}
-            onClick={() => handleClick(item.route)}
+            className={buttonClass}
+            onClick={() => handleClick(item.path)}
           >
             <item.icon className='text-xl' />
             {item.label}
           </button>
-        )
+        );
       })}
     </div>
-  )
-}
+  );
+};
 
-export default SideMenu
+export default SideMenu;

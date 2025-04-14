@@ -10,7 +10,7 @@ exports.getDashboardData = async (req, res) => {
         // ✅ Total Income using correct field 'income'
         const totalIncome = await Income.aggregate([
             { $match: { userId: userObjectId } },
-            { $group: { _id: null, total: { $sum: "$income" } } }
+            { $group: { _id: null, total: { $sum: "$amount" } } }
         ]);
         console.log("totalIncome",{totalIncome,useId: isValidObjectId(userId)})
         // ✅ Total Expense
