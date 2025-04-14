@@ -41,6 +41,16 @@ exports.getAllExpense = async (req, res) => {
 // ✅ Delete Expense
 exports.deleteExpense = async (req, res) => {
     try {
+        const expense = await Expense.findById(req.params.id);
+
+        if (!expense) {
+            return res.status(404).json({ message: "Expense not found" });
+        }
+
+        if (expense.userId.toString() !== req.user.id) {
+            return res.status(403).json({ message: "Not authorized" });
+        }
+
         await Expense.findByIdAndDelete(req.params.id);
         res.json({ message: "Expense deleted successfully" });
     } catch (err) {
@@ -49,9 +59,9 @@ exports.deleteExpense = async (req, res) => {
 };
 
 // ✅ Download Expense Excel
-exports. downloadExpenseExcel= async (req, res) => {
+exports.downloadExpenseExcel = async (req, res) => {
     const userId = req.user.id;
-    
+
     try {
         const expenses = await Expense.find({ userId }).sort({ date: -1 });
 
@@ -65,11 +75,9 @@ exports. downloadExpenseExcel= async (req, res) => {
         const ws = xlsx.utils.json_to_sheet(data);
         xlsx.utils.book_append_sheet(wb, ws, "Expenses");
 
-        // Save file in a temporary directory
         const filePath = path.join(__dirname, "../uploads/expense_details.xlsx");
         xlsx.writeFile(wb, filePath);
 
-        // Send the file as a download
         res.download(filePath, "expense_details.xlsx", (err) => {
             if (err) {
                 console.error("Error downloading file:", err);

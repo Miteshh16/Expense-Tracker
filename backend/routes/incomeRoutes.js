@@ -7,6 +7,6 @@ const router = express.Router();
 router.post("/add", protect, addIncome);
 router.get("/get", protect, getAllIncome);
 router.get("/downloadexcel", protect, downloadIncomeExcel);
-router.delete("/:id",  deleteIncome);
+router.delete("/:id", protect, deleteIncome); // 🛠️ Added protect middleware
 
 module.exports = router;
